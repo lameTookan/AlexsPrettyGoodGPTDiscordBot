@@ -1,0 +1,91 @@
+[
+    {
+        "id": "chatcmpl-7g8DzJ2zlyJ2Pm3woo0nvceKJ2R77",
+        "object": "chat.completion.chunk",
+        "created": 1690275747,
+        "model": "gpt-3.5-turbo-0613",
+        "choices": [
+            {
+                "index": 0,
+                "delta": {
+                    "role": "assistant",
+                    "content": ""
+                },
+                "finish_reason": null
+            }
+        ]
+    },
+    {
+        "id": "chatcmpl-7g8DzJ2zlyJ2Pm3woo0nvceKJ2R77",
+        "object": "chat.completion.chunk",
+        "created": 1690275747,
+        "model": "gpt-3.5-turbo-0613",
+        "choices": [
+            {
+                "index": 0,
+                "delta": {
+                    "content": "'"
+                },
+                "finish_reason": null
+            }
+        ]
+    },
+    {
+        "id": "chatcmpl-7g8DzJ2zlyJ2Pm3woo0nvceKJ2R77",
+        "object": "chat.completion.chunk",
+        "created": 1690275747,
+        "model": "gpt-3.5-turbo-0613",
+        "choices": [
+            {
+                "index": 0,
+                "delta": {
+                    "content": "Hello"
+                },
+                "finish_reason": null
+            }
+        ]
+    },
+    {
+        "id": "chatcmpl-7g8DzJ2zlyJ2Pm3woo0nvceKJ2R77",
+        "object": "chat.completion.chunk",
+        "created": 1690275747,
+        "model": "gpt-3.5-turbo-0613",
+        "choices": [
+            {
+                "index": 0,
+                "delta": {
+                    "content": " World"
+                },
+                "finish_reason": null
+            }
+        ]
+    },
+    {
+        "id": "chatcmpl-7g8DzJ2zlyJ2Pm3woo0nvceKJ2R77",
+        "object": "chat.completion.chunk",
+        "created": 1690275747,
+        "model": "gpt-3.5-turbo-0613",
+        "choices": [
+            {
+                "index": 0,
+                "delta": {
+                    "content": "!'"
+                },
+                "finish_reason": null
+            }
+        ]
+    },
+    {
+        "id": "chatcmpl-7g8DzJ2zlyJ2Pm3woo0nvceKJ2R77",
+        "object": "chat.completion.chunk",
+        "created": 1690275747,
+        "model": "gpt-3.5-turbo-0613",
+        "choices": [
+            {
+                "index": 0,
+                "delta": {},
+                "finish_reason": "stop"
+            }
+        ]
+    }
+]

@@ -1,0 +1,146 @@
+{
+    "trim_object": {
+        "model": "gpt-4",
+        "system_prompt": "You are being run in Alex's Pretty Good Chatbot CLI, a simple interface meant to show off Alex's Pretty Good Chat Module. Your model is ||model||. The date is ||date||, and the time is ||time||. Your training data was last updated ||cut_off||.",
+        "token_info": {
+            "max_tokens": 8000,
+            "max_messages": 200,
+            "max_completion_tokens": 1000,
+            "token_padding": 500,
+            "max_chatlog_tokens": 6500
+        },
+        "trimmed_chatlog_tokens": 248,
+        "trimmed_messages": 0,
+        "uuid": "8e12e683-e091-4a47-ab6f-56da44fd97a4",
+        "is_sys_set": true,
+        "most_recent_message": {
+            "role": "assistant",
+            "content": "That sounds like an impressive project! Streaming responses can certainly make a system more responsive and user-friendly. Leveraging an abstract class for various handlers is a great design choice, as it encourages modularity and scalability. Your StdoutStreamOutputHandler seems to be a practical implementation for a CLI environment. If you have any questions or need any assistance with your project, feel free to ask!"
+        },
+        "most_recent_trimmed_message": null,
+        "is_set_up": true,
+        "timestamp": "1690338952.228815",
+        "chatlog": {
+            "meta": {
+                "version": "1.0.0",
+                "uuid": "e09cbce3-6a71-4632-942f-dd780fca7c8a"
+            },
+            "model": "gpt-4",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": "Hello!"
+                },
+                {
+                    "role": "assistant",
+                    "content": "Hello! How can I assist you today?"
+                },
+                {
+                    "role": "user",
+                    "content": "Whats your model?"
+                },
+                {
+                    "role": "assistant",
+                    "content": "My model is GPT-4, which is an AI language model developed by OpenAI. It's designed to understand and generate human-like text based on the input it receives."
+                },
+                {
+                    "role": "user",
+                    "content": "Nice nice. What application is this?"
+                },
+                {
+                    "role": "assistant",
+                    "content": "You're currently using \"Alex's Pretty Good Chatbot CLI\". This is a command-line interface (CLI) that was designed to showcase and interact with the GPT-4 model, which is part of \"Alex's Pretty Good Chat Module\".\n"
+                },
+                {
+                    "role": "user",
+                    "content": "I am actually doing some integrated with my new stream output handler system, that allows for streaming responses as they come in. The handlers have an abstract class so anyone can make their own for any interface. Rn I am using the StdoutStreamOutputHnadler I made. It seems to be working okay!"
+                },
+                {
+                    "role": "assistant",
+                    "content": "That sounds like an impressive project! Streaming responses can certainly make a system more responsive and user-friendly. Leveraging an abstract class for various handlers is a great design choice, as it encourages modularity and scalability. Your StdoutStreamOutputHandler seems to be a practical implementation for a CLI environment. If you have any questions or need any assistance with your project, feel free to ask!"
+                }
+            ]
+        },
+        "trimmed_chatlog": [
+            {
+                "role": "user",
+                "content": "Hello!"
+            },
+            {
+                "role": "assistant",
+                "content": "Hello! How can I assist you today?"
+            },
+            {
+                "role": "user",
+                "content": "Whats your model?"
+            },
+            {
+                "role": "assistant",
+                "content": "My model is GPT-4, which is an AI language model developed by OpenAI. It's designed to understand and generate human-like text based on the input it receives."
+            },
+            {
+                "role": "user",
+                "content": "Nice nice. What application is this?"
+            },
+            {
+                "role": "assistant",
+                "content": "You're currently using \"Alex's Pretty Good Chatbot CLI\". This is a command-line interface (CLI) that was designed to showcase and interact with the GPT-4 model, which is part of \"Alex's Pretty Good Chat Module\".\n"
+            },
+            {
+                "role": "user",
+                "content": "I am actually doing some integrated with my new stream output handler system, that allows for streaming responses as they come in. The handlers have an abstract class so anyone can make their own for any interface. Rn I am using the StdoutStreamOutputHnadler I made. It seems to be working okay!"
+            },
+            {
+                "role": "assistant",
+                "content": "That sounds like an impressive project! Streaming responses can certainly make a system more responsive and user-friendly. Leveraging an abstract class for various handlers is a great design choice, as it encourages modularity and scalability. Your StdoutStreamOutputHandler seems to be a practical implementation for a CLI environment. If you have any questions or need any assistance with your project, feel free to ask!"
+            }
+        ]
+    },
+    "completion_wrapper": {
+        "model": "gpt-4",
+        "uuid": "46fc6d0c-72e3-4771-a39b-b344e0a4effb",
+        "parameters": {
+            "max_tokens": 1000,
+            "temperature": 0.7,
+            "top_p": null,
+            "presence_penalty": null,
+            "frequency_penalty": null,
+            "stream": true,
+            "uuid": "14a57e4f-e087-4888-8cb0-242778726400"
+        }
+    },
+    "return_type": "Message",
+    "is_trimmed_setup": true,
+    "is_completion_setup": true,
+    "model": "gpt-4",
+    "template": {
+        "model": "gpt-4",
+        "trim_object": {
+            "model": "gpt-4",
+            "max_tokens": 8000,
+            "token_padding": 500,
+            "max_completion_tokens": 1000,
+            "max_messages": 200
+        },
+        "chat_completion_wrapper": {
+            "model": "gpt-4",
+            "max_tokens": 1000,
+            "temperature": 0.7
+        },
+        "info": {
+            "description": "The default configuration for the gpt-4 model",
+            "tags": [
+                "gpt-4",
+                "default",
+                "chat"
+            ]
+        },
+        "name": "gpt-4_default",
+        "id": 1
+    },
+    "meta": {
+        "uuid": "29967359-68d3-4021-9154-f18503ca051e",
+        "time_stamp": "07/25/2023, 19:35:52",
+        "version": "2.0.6"
+    }
+}
