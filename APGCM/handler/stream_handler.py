@@ -2,6 +2,7 @@ import sys
 import os
 from abc import ABC, abstractmethod
 from log_config import BaseLogger, DEFAULT_LOGGING_LEVEL
+import asyncio 
 
 class AbstractStreamOutputHandler(ABC):
     name = "Abstract_Stream_Output_Handler"
@@ -138,4 +139,33 @@ class StdoutStreamHandler(AbstractStreamOutputHandler):
         # reset everything so it doesn't clog up memory, no need to record it here, as ChatCompletionWrapper will have a record of it.
         self._reset()
     
-    
+
+        
+class DisMessageSplitStreamHandler(AbstractStreamOutputHandler):
+    name = "DisMessageSplit_Stream_Handler"
+    def __init__(self, chunk_size: int = 1000, ):
+        self.logger = BaseLogger(__name__, identifier=f"{self.name}_StreamHandler",   filename="discord_stream_handler.log", level=DEFAULT_LOGGING_LEVEL)
+        self.chunk_size = chunk_size
+        self.logger.info(f"Initializing {self.name} Stream Handler")
+        self.accumulator = ""
+        self.queue = asyncio.Queue()
+    def write(self, content: str, full_event: dict) -> None:
+        """Writes the content to stdout, and then flushes it. Also logs the content."""
+        self.logger.info(f"Writing {content} to stdout")
+        self.accumulator += content
+        if len(self.accumulator) >= self.chunk_size:
+            self.queue.put_nowait(self.accumulator)
+            self.accumulator = ""
+    def done(self, stop_reason):
+        self.queue.put_nowait(self.accumulator)
+        self.accumulator = ""
+        self.queue.put_nowait(None)
+        self.logger.info(f"Done streaming. Stop reason: {stop_reason}")
+    async def get_messages(self):
+        while True:
+            message = await self.queue.get()
+            if message is None:
+                break
+            yield message
+            self.queue.task_done()
+discord_handler = DisMessageSplitStreamHandler()

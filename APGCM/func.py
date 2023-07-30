@@ -5,7 +5,7 @@ import logging
 import threading
 import sys 
 import time 
-from typing import Self
+
 
 
 
@@ -285,12 +285,13 @@ class LoadingSpinner:
         self.thread.join()
         sys.stdout.write("\r" + ( " " * (len(self.message) + 2)))
         sys.stdout.write("\r")
+        sys.stdout.write("\n")
         sys.stdout.flush()
     def __repr__(self) -> str:
         return f"LoadingSpinner(message={self.message})"
     #==(Context Manager Protocol)==
        
-    def __enter__(self) -> Self:
+    def __enter__(self):
         """Called when used as a context manager. Starts the spinner. 
        
         I  can't imagine a what you would do to this class within the context manager, but hey, it's there if you need it."""
@@ -299,3 +300,8 @@ class LoadingSpinner:
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         """Called when used as a context manager. Stops the spinner. Does nothing with the exception info."""
         self.stop()
+def quick_make_chat_wrapper(self):
+    """This will make a chat wrapper with the defaults you have set in your .env file. Useful for testing and if you don't want to use any of the customization options in the ChatFactory class."""
+    from templates.cw_factory import ChatFactory
+    fact = ChatFactory()
+    return fact.get_chat()

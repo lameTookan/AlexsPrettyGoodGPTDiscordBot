@@ -12,10 +12,7 @@ from APGCM import (
 )
 from APGCM.settings import DEFAULT_TEMPLATE_NAME, OPENAI_API_KEY
 
-fact = ChatFactory()
+from bot.bot import main as bot_main
 
-cw = fact.get_chat()
-
-while True:
-    ans = input("> ")
-    print(cw.chat(ans))
+if __name__ == "__main__":
+    bot_main()

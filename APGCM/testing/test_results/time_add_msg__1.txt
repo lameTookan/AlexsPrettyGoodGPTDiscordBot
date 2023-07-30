@@ -1,0 +1,60 @@
+Test Results:
+Loaded a chat of length 1430 
+Elapsed time while processing 0.11027908299001865
+Average time per message: 7.711823985315989e-05
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+Debug info:
+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+
+ChatWrapper(gpt-4API_KEY = exists,return_type = Message)
+Chat Wrapper Object with UUID: ec7f0426-3e37-45cb-9d88-57c808ad6b48 and version: 3.0.0
+Is Trimmed Setup: False
+Is Completion Setup: False
+Is Loaded: False
+Trim Object Info:
+--------------------
+Trimmed ChatLog object with the following attributes:
+uuid: 0983f79f-96e1-4005-9b6a-b4b89e9446c2
+is_sys_set: True
+system_prompt: You are being run in Alex's Pretty Good Chatbot CLI, a simple interface meant to show off Alex's Pretty Good Chat Module. Your model is ||model||. The date is ||date||, and the time is ||time||. Your training data was last updated ||cut_off||.
+trimmed_chatlog_tokens: 1390
+trimmed_messages: 1230
+trimmed_chatlog length 200
+most_recent_trimmed_message: > Hello, how are you?
+max_chatlog_tokens: 6500
+max_completion_tokens: 1000
+max_messages: 200
+max_tokens: 8000
+token_padding: 500
+is_loaded: False
+is_set_up: True
+most_recent_message: > Hello, how are you?
+model: gpt-4
+Chatlog: ChatLog(gpt-4)
+ChatLog Object with the following attributes:
+	Model: gpt-4
+	Messages: 1430
+Chatlog length: 1430
+--------------------
+Completion Wrapper Info:
+--------------------
+ChatCompletionWrapper object with the following attributes:
+model: gpt-4
+uuid: 1a7c757f-c88f-4d16-8f73-ad1d978e462d
+version: 2.0.0
+is_loaded: False
+API_KEY:present
+Parameter Object Information:
+ModelParameters Object with the following parameters:
+uuid: 3dd01442-a5ee-47bc-a16a-9e1ce7676b85
+Model Parameters:
+    max_tokens: 1000
+    temperature: 0.7
+    top_p: None
+    presence_penalty: None
+    frequency_penalty: None
+    stream: False
+--------------------

@@ -1,4 +1,4 @@
-from file_handlers import GeneralFileHandler, JsonFileHandler,TextFileHandler
+from file_handlers.gen_file import GeneralFileHandler, JsonFileHandler,TextFileHandler
 from pathlib import Path
 import func 
 import os

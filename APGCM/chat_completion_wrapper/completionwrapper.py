@@ -89,6 +89,22 @@ class ChatCompletionWrapper:
         See ModelParameters class for more information.
         """
         self.parameters.set_params(**kwargs)
+    def stream_chat(self, messages: list[dict] ) -> openai.ChatCompletion:
+        """Returns a ChatCompletion object directly from the OpenAI API, without any modifications."""
+        openai.api_key = self.API_KEY
+        tries = 3
+        while True:
+            try:
+                return openai.ChatCompletion.create(model=self.model, messages=self._verify_messages(messages), **self.parameters.get_param_kwargs())
+
+            except openai.OpenAIError as e:
+                tries -= 1
+                if tries == 0:
+                    raise e
+                print("Error: {}".format(e))
+                print("Retrying {} more times".format(tries))
+                time.sleep(5)
+                continue
     def chat(self, messages: list[dict]) -> str:
         """Main method for the ChatCompletionWrapper class, takes a list of messages and returns a response as a string. """
         openai.api_key = self.API_KEY

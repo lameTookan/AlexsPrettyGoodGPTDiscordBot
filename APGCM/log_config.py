@@ -1,12 +1,16 @@
 import logging 
+import logging.handlers
 
 from pathlib import Path
 from settings import DEFAULT_LOGGING_LEVEL, DEFAULT_LOGGING_DIR
 
-
+#====(DEFAULT LOGGING SETTINGS)====
 DEFAULT_LOGGING_LEVEL = DEFAULT_LOGGING_LEVEL
 LOGGING_FORMAT = '[%(asctime)s] %(name)s - %(levelname)s #%(lineno)s :: %(message)s'
 LOGGING_FILE_PATH = DEFAULT_LOGGING_DIR
+DEFAULT_MAX_BYTES = 10485760
+DEFAULT_MAX_FILES = 5
+#todo add .env file support for max bytes and max files
 
 
 """
@@ -35,7 +39,8 @@ class BaseLogger:
      
         path.touch(exist_ok=True)
         logger.setLevel(self.level)
-        self.file_handler = logging.FileHandler(str(path))
+        
+        self.file_handler = logging.handlers.RotatingFileHandler(str(path), maxBytes=DEFAULT_MAX_BYTES, backupCount=DEFAULT_MAX_FILES)
         self.file_handler.setLevel(self.level)
         self.file_handler.setFormatter(logging.Formatter(self.format))
         logger.addHandler(self.file_handler)

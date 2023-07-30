@@ -1,4 +1,5 @@
-from templates import TemplateSelector, template_sample
+from templates.template_selector import TemplateSelector
+from templates.temp_sample import template_sample
 import unittest
 import exceptions
 import logging

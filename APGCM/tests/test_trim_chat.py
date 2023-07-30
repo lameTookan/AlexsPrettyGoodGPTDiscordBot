@@ -98,6 +98,48 @@ class TestTrimChatLog(unittest.TestCase):
     def test_not_bad_save_dict_error(self):
         with self.assertRaises(exceptions.BadSaveDictionaryError):
             self.trim.load_from_save_dict({"bad": "save_dict"})
+    def test_set_reminder(self):
+        """Tests that the reminder is set correctly"""
+        self.trim.reminder = "hello"
+        self.assertTrue(self.trim._has_reminder)
+        #reminders get the "Reminder: " prefix
+        self.assertEqual(self.trim.reminder, "Reminder: hello")
+    def test_reminder_is_added(self):
+        """Tests that if a reminder is set, the reminder is added to the chatlog"""
+        self.trim.reminder = "hello"
+        self.trim.user_message = "hello"
+        self.trim.system_prompt = "hello"
+        # the reminder object will add the "Reminder: " prefix as well as any wildcards(this is tested in test_reminder.py)
+        reminder_val = self.trim._reminder_obj.prepared_reminder
+        finished = self.trim.get_finished_chatlog()
+        expected_finish = [
+            {"role": "system", "content": "hello"},
+            {"role": "user", "content": "hello"},
+            {"role": "system", "content": reminder_val}
+        ]
+        self.assertEqual(finished, expected_finish)
+    def test_reminder_is_not_added(self):
+        """Tests that if no reminder is set, the reminder is not added to the chatlog"""
+        self.trim.reminder = None
+        self.trim.user_message = "hello"
+        self.trim.system_prompt = "hello"
+        expected_finished = [
+            {"role": "system", "content": "hello"},
+            {"role": "user", "content": "hello"}
+        ]
+        self.assertEqual(self.trim.get_finished_chatlog(), expected_finished)
+    def test_bad_reminder_value(self):
+        """Tests that a bad reminder value raises an error"""
+        #making a class that is not a reminder object
+        class Example:
+            pass
+        example = Example()
+        with self.assertRaises(exceptions.BadTypeError):
+            self.trim.reminder = example 
+        with self.assertRaises(exceptions.BadTypeError):
+            self.trim.reminder = 1
+        with self.assertRaises(exceptions.BadTypeError):
+            self.trim.reminder = True
     
     def tearDown(self):
         del self.trim

@@ -18,6 +18,7 @@ class MessageReturnType(Enum):
 
 
 class TrimChatLog:
+    message_return_types = MessageReturnType
 
     """ 
     TrimChatLog is a class that is used to trim a chat log to a certain number of tokens, and acts as a wrapper for the chatlog, message, and system prompt classes.
@@ -124,6 +125,7 @@ class TrimChatLog:
         max_messages: int = 200,
         max_completion_tokens: int = 1000,
         token_padding: int = 500,
+        reminder: str = None,
         auto_setup_chatlog: bool = True
     ) -> None:
         self.logger = BaseLogger(
@@ -132,14 +134,20 @@ class TrimChatLog:
             level=DEFAULT_LOGGING_LEVEL,
             identifier="TrimChatLog",
         )
+        
         self.logger.info(f"TrimChatLog version: {str(self.version)} Initialized.")
         self._model = model
+        if auto_setup_chatlog and chatlog is None:
+            self.auto_make_chatlog()
+        else:
+            self.chatlog = chatlog
         self.trimmed_chatlog = deque()
         self.is_set_up = False
         self.trimmed_chatlog_tokens = 0
+        
         self.most_recent_trimmed_message: chat.Message = None
         self.most_recent_message: chat.Message = None
-        
+        self._reminder_obj = chat.Reminder(model, reminder)
         if not isinstance(chatlog, chat.AbstractChatLog) and chatlog is not None:
             raise exceptions.IncorrectObjectTypeError(
                 "The chatlog is not a chatlog object. Please use the chat.ChatLog class to create a chatlog, or get a factory using the get_chatlog_factory method."
@@ -156,11 +164,10 @@ class TrimChatLog:
                 model, system_prompt
             )
             self.is_sys_set = True
-        if auto_setup_chatlog and chatlog is None:
-            self.auto_make_chatlog()
+       
         
         self.uuid = str(uuid.uuid4())
-        self.chatlog = chatlog
+        
         self.max_tokens = max_tokens
         self.max_messages = max_messages
         self.max_completion_tokens = max_completion_tokens
@@ -169,6 +176,7 @@ class TrimChatLog:
         self.max_chatlog_tokens = 0
         self.work_out_tokens()
         self.trimmed_messages = 0
+        
 
         self.is_loaded = False
     def add_chatlog(self, chatlog: chat.AbstractChatLog) -> None:
@@ -177,18 +185,41 @@ class TrimChatLog:
             raise exceptions.IncorrectObjectTypeError(
                 "The chatlog is not a chatlog object. Please use the chat.ChatLog class to create a chatlog, or get a factory using the get_chatlog_factory method."
             )
-        if chatlog is None:
+        if chatlog is None :
             self.logger.info("Unsetting chatlog")
-        self.chatlog = chatlog
-        self.logger.info("Chatlog set to: " + repr(chatlog))
+            self.chatlog = None
+        else:
+            self.chatlog = chatlog
+            self.logger.info("Chatlog set to: " + repr(chatlog))
+    @property
+    def reminder(self) -> str: 
+        """Returns the reminder string"""
+        return self._reminder_obj.prepared_reminder
+    @reminder.setter
+    def reminder(self, reminder: str) -> None:
+        """Must be a string, sets the reminder string."""
+        self._reminder_obj.reminder_content = reminder
+        self._rework_tokens()
+    @property
+    def _has_reminder(self) -> bool:
+        """Returns True if the reminder is set, False if not."""
+        result =  self._reminder_obj.is_reminder_set
+        if result is None:
+            return False
+        else:
+            return result 
     def _has_chatlog(self) -> bool:
         if self.chatlog is None:
             return False
-        return True
+        else:
+            return True
     def auto_make_chatlog(self) -> None:
         """Makes a chatlog object using the default user list concrete chatlog class, if one is provided in save dict."""
         self.logger.info("Auto making chatlog")
         self.chatlog = chat.ChatLog(model=self.model)
+        self.logger.info("Chatlog set to: " + repr(self.chatlog))
+        self.logger.warning("Chatlog ")
+        assert self._has_chatlog()
     @property
     def system_prompt_tokens(self) -> int:
         """Using the SystemPrompt object, returns the number of tokens in the system prompt. If the system prompt is not set, returns 0."""
@@ -211,7 +242,7 @@ class TrimChatLog:
         self._system_prompt_string = system_prompt
         self.system_prompt_object = chat.SystemPrompt(self.model, system_prompt)
         self.logger.info("System prompt set to: " + system_prompt)
-        self.work_out_tokens()
+        self._rework_tokens()
         self.is_sys_set = True
 
     @property
@@ -230,6 +261,12 @@ class TrimChatLog:
         self.message_factory.set_model(model)
         self.work_out_tokens()
         self.trim_chatlog()
+    def _rework_tokens(self, recount: bool = False ) -> None:
+        """Reworks the tokens in the chatlog. Calls work_out_tokens, recount_tokens and trim_chatlog."""
+        self.work_out_tokens()
+        if recount:
+            self.recount_tokens()
+        self.trim_chatlog()
 
     def work_out_tokens(self) -> None:
         """Works out the max tokens that can be used for the chat log. One of the core methods of this class."""
@@ -238,6 +275,7 @@ class TrimChatLog:
         max_tokens = self.max_tokens
         token_padding = self.token_padding
         max_completion_tokens = self.max_completion_tokens
+        reminder_tokens = self._reminder_obj.tokens # will be 0 if reminder is not set
         self.max_chatlog_tokens = max_tokens - (
             system_prompt_tokens + token_padding + max_completion_tokens
         )
@@ -267,6 +305,7 @@ class TrimChatLog:
             self.chatlog.add_message(message)
         self.most_recent_message = message
         self.trimmed_chatlog.append(message)
+        self.logger.debug("Got message: " + message.content)
 
         self.trim_chatlog()
     def reset(self)-> None:
@@ -337,11 +376,16 @@ class TrimChatLog:
 
     def get_finished_chatlog(self) -> list[dict]:
         """Returns the finished chat log, with the system prompt as a list of dictionaries for use with the API"""
-        if self.is_sys_set is False:
-            return self.get_trimmed_messages_as_dict()
-        system_prompt = self.system_prompt.as_dict()
+        result = []
+        if self.system_prompt_object.has_system_prompt:
+            result.append(self.system_prompt_object.system_prompt_message.as_dict())
+       
         trimmed_chat_log = self.get_trimmed_messages_as_dict()
-        return [system_prompt] + trimmed_chat_log
+        result.extend(trimmed_chat_log)
+        if self._has_reminder is True:
+            result.append(self._reminder_obj.reminder_as_message.as_dict())
+      
+        return result
     @property
     def finished_chatlog(self) -> list[dict]:
         """Using the get_finished_chatlog method, returns the finished chat log, with the system prompt as a list of dictionaries for use with the API"""
@@ -492,10 +536,8 @@ class TrimChatLog:
     @property
     def user_message(self) -> str | None:
         """Returns the user message."""
-        result =  self.get_messages_as_list(role="user", limit=1, reverse=True, format=MessageReturnType.STRING)
-        if len(result) > 0:
-            return result[0]
-        return None
+        for msg in self.get_messages(role="user", limit=1, reverse=True):
+            return msg.content if msg is not None else None
 
     @user_message.setter
     def user_message(self, value: str) -> None:
@@ -546,11 +588,12 @@ class TrimChatLog:
         counter = 0 
         for msg in chatlog:
             if role is None or msg.role == role:
+                if limit is not None and counter >= limit:
+                    break
+               
+                counter += 1
                 yield msg
-                limit -=1
-            if limit is not None and limit >0:
-                
-                break
+            
     def get_messages_as_list(self, role: str = None, limit: int = None, reverse: bool = True, format: str = MessageReturnType.MESSAGE) -> List[chat.Message | dict | str]:
         """Returns the messages from the chatlog as a list of Message objects, dictionaries, or strings.
         Possible formats are:
@@ -597,7 +640,7 @@ class TrimChatLog:
             "Trimmed ChatLog object with the following attributes:",
             "uuid: " + str(self.uuid),
             "is_sys_set: " + str(self.is_sys_set),
-            "system_prompt: " + str(self._system_prompt_string),
+            "system_prompt: " + str(self.system_prompt_object.system_prompt_raw),
             "trimmed_chatlog_tokens: " + str(self.trimmed_chatlog_tokens),
             "trimmed_messages: " + str(self.trimmed_messages),
             "trimmed_chatlog length " + str(len(self.trimmed_chatlog)),
@@ -616,6 +659,12 @@ class TrimChatLog:
         if self._has_chatlog():
             msg_list.append("Chatlog: " + repr(self.chatlog))
             msg_list.append("Chatlog length: " + str(len(self.chatlog)))
+        else: 
+            msg_list.append("Chatlog: Unset(No history beyond trimmed chatlog)")
+        if self._has_reminder: 
+            msg_list.append("Reminder: " + str(self.reminder))
+        else:
+            msg_list.append("Reminder: None")
         return "\n".join(msg_list)
     @property
     def pretty_trimmed_chatlog(self) -> str:
