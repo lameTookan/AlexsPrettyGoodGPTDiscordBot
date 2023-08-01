@@ -36,8 +36,7 @@ For a detailed guide on setting the bot up, made especially for beginners check 
 
     Follow the instructions under STEP 1, STEP 2, and STEP 3 comments in the .env.example file.
 
-5. Add your home channel id to the config.ini.example and rename it to config.ini (This step is optional if you have already set the home channel id in the .env file)
-
+5. Add your home channel id to the config.ini.example and rename it to config.ini 
 6. I recommend running the `quick_test.py` script to ensure everything is correctly setup before running the bot.
 
     ```bash
