@@ -56,8 +56,11 @@ def test_dependencies():
     print("Attempting to import dependencies...")
     try:
         import discord
+        print("Discord dependency imported...")
         import tiktoken
+        print("Tiktoken dependency imported...")
         import openai
+        print("Openai dependency imported...")
         from dotenv import load_dotenv
 
     except Exception as e:
