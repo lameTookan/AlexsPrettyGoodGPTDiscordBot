@@ -18,7 +18,7 @@ The bot includes:
 - **Powerful Template System**: Powered by APGCM, adjust every aspect of the bot's behavior using the template system. Take full advantage of the model's max tokens with up to 200 max messages in the chat history.
 
 ## Setup
-For a detailed guide on setting the bot up, made especially for beginners check out the [HELP_ME_PLEASE.md](../Docs/help/HELP_ME_PLEASE.md)
+For a detailed guide on setting the bot up, made especially for beginners check out the [HELP_ME_PLEASE.md](/Docs/help/HELP_ME_PLEASE.md)
 
 1. Clone the repo
 2. Install the requirements with pip:
