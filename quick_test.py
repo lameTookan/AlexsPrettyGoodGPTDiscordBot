@@ -76,7 +76,10 @@ def test_dependencies():
     print("\u001b[34m Step 1 passed. \u001b[0m")
     input("Press enter to continue.")
 
-
+def make_config():
+    from config.maker import make_config
+    # code will cause errors unless this file is made, so we will do it here as well as in main.
+    make_config()
 def obscure_keys(key: str) -> str:
     """Obscure the key."""
     if key is None:
@@ -248,6 +251,7 @@ def test_bot():
 def main():
     print_header()
     test_dependencies()
+    make_config()
     test_settings()
     get_test_ai_response()
     test_discord()
