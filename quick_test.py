@@ -78,7 +78,7 @@ def test_dependencies():
     input("Press enter to continue.")
 
 def make_config():
-    from config.maker import make_config
+    from config_maker import make_config
     # code will cause errors unless this file is made, so we will do it here as well as in main.
     print("Making config file(Used to store settings that can be changed during runtime)...")
     make_config()
