@@ -1,6 +1,7 @@
 import sys
 import time 
 
+
 sys.path.append("./APGCM")
 """A simple test script meant to ensure users have correctly setup the project, before running the full program.
 4 steps:
@@ -79,6 +80,7 @@ def test_dependencies():
 def make_config():
     from config.maker import make_config
     # code will cause errors unless this file is made, so we will do it here as well as in main.
+    print("Making config file(Used to store settings that can be changed during runtime)...")
     make_config()
 def obscure_keys(key: str) -> str:
     """Obscure the key."""
