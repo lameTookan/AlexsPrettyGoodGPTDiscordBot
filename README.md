@@ -58,7 +58,7 @@ APGCM is a highly customizable and extendable module developed for creating chat
 ```python
 import APGCM
 factory = APGCM.ChatFactory()
-chat = factory.create_chat()
+chat = factory.get_chat()
 stream_handler = APGCM.StdoutStreamHandler()
 chat.add_stream_handler(stream_handler)
 
