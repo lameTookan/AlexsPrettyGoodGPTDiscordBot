@@ -5,7 +5,7 @@ import logging
 from abc import ABC, abstractmethod
 
 import exceptions
-from chat.message import Message
+from chat.message import Message, MessageFactory
 from log_config import (DEFAULT_LOGGING_LEVEL, LOGGING_FILE_PATH,
                         LOGGING_FORMAT, BaseLogger)
 """These classes are used to export data from the chat log to a file as a text file or markdown file."""
@@ -30,6 +30,8 @@ class Exporter(ABC):
         self.logger.set_logging_level(DEFAULT_LOGGING_LEVEL)
         self.logger.debug("Initializing Exporter")
         self.extra_meta = kwargs
+        if type(self.data[0]) is not Message:
+            self.data = [Message(model=model, **msg) for msg in self.data]
     @abstractmethod
     def _format_message(self, msg: Message) -> str:
         pass

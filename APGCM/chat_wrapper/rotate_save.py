@@ -73,11 +73,12 @@ class RotatingSave:
             
         
     """
-    def __init__(self, save_handler: AbstractCWSaveHandler = None , save_name: str = "auto_save", num_saves: int =3):
+    def __init__(self, save_handler: AbstractCWSaveHandler = None , save_name: str = "auto_save", num_saves: int =3, prefix="AS_"):
         self.logger = BaseLogger(module_name=__file__, filename="rotating_save.log",level=DEFAULT_LOGGING_LEVEL, identifier="rotating_save")
         self.logger.info("Initializing rotating save...")
         
-        self.save_name = save_name
+        self.base_name = save_name
+        self.prefix = prefix
         self.num_saves = num_saves
         self.saves = None
         
@@ -87,6 +88,14 @@ class RotatingSave:
         self.add_save_handler(save_handler)
         self.logger.info("Rotating save initialized!")
     #======(SETUP/NAMING)======
+    @property
+    def save_name(self) -> str:
+        return f"{self.prefix}{self.base_name}"
+    def is_auto_save(self, name: str) -> bool:
+        if name.startswith(self.prefix):
+            return True
+        else:
+            return False
     def _setup_names(self) -> None:
         """Sets up the names for the saves"""
         self.logger.info("Setting up names...")
@@ -115,7 +124,7 @@ class RotatingSave:
         if save_name is not None:
             if not isinstance(save_name, str):
                 raise exceptions.BadTypeError("save_name must be a string")
-            self.save_name = save_name
+            self.base_name = save_name
         self.logger.info(f"Save info set to num_saves: {self.num_saves}, save_name: {self.save_name}")
         self._setup_names()
     #======(SAVE HANDLER MANAGEMENT)======   
@@ -171,7 +180,8 @@ class RotatingSave:
                 self.logger.warning(f"Save {save} deleted")
             else:
                 self.logger.warning(f"Save {save} does not exist")
-                
+    def _make_backup_name(self, save_name: str) -> str:
+        return f"{save_name}_backup"
     def backup_saves(self):
         """Backs up all saves by renaming them to save_name_backup_i"""
         self._check_save_handler()
@@ -180,8 +190,22 @@ class RotatingSave:
             if self.save_handler.check_entry(save):
                 entry = self.save_handler.read_entry(save)
                 # no rename method, so we have to read the entry, delete the old entry, and write the entry to the new name
-                self.save_handler.write_entry(f"{self.save_name}_backup_{i}", entry, overwrite=True)
+                self.save_handler.write_entry(self._make_backup_name(save), entry, overwrite=True)
                 self.logger.info(f"Save {save} backed up")
+            else:
+                self.logger.info(f"Save {save} does not exist")
+    def delete_all_saves_and_backups(self)-> None:
+        """Deletes all saves and backups"""
+        self._check_save_handler()
+        for save in self.saves:
+            if self.save_handler.check_entry(save):
+                self.save_handler.delete_entry(save)
+                backup_name = self._make_backup_name(save)
+                if self.save_handler.check_entry(backup_name):
+                    self.save_handler.delete_entry(backup_name)
+                    self.logger.info(f"Save {save} and backup {backup_name} deleted")
+                else:
+                    self.logger.info(f"Save {save} deleted")
             else:
                 self.logger.info(f"Save {save} does not exist")
     def find_most_recent_save(self) -> str:

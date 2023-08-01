@@ -1,33 +1,39 @@
-import os 
+import os
 import sys
-import logging 
+import logging
 from dotenv import load_dotenv
-import func 
-from enum import Enum 
+import func
+from enum import Enum
+
 load_dotenv()
+
+
 def get_env_or_default(env_name: str, default: str) -> str:
     """Returns the value of an environment variable if it exists, otherwise returns the default value."""
     return os.getenv(env_name, default)
-#====(CHATLOG SETTINGS)====
+
+
+# ====(CHATLOG SETTINGS)====
 class ChatLogHandlers(Enum):
     CHATLOG_USERLIST = "ChatLogUserList"
-    
-
-DEFAULT_CHATLOG_HANDLER = os.getenv("DEFAULT_CHATLOG_HANDLER", ChatLogHandlers.CHATLOG_USERLIST.value)
 
 
+DEFAULT_CHATLOG_HANDLER = os.getenv(
+    "DEFAULT_CHATLOG_HANDLER", ChatLogHandlers.CHATLOG_USERLIST.value
+)
 
-#====(LOGGING SETTINGS)====
+
+# ====(LOGGING SETTINGS)====
 level = func.convert_level_to_value(os.getenv("DEFAULT_LOGGING_LEVEL", logging.WARNING))
-DEFAULT_LOGGING_LEVEL = level 
+DEFAULT_LOGGING_LEVEL = level
 DEFAULT_LOGGING_DIR = os.getenv("DEFAULT_LOGGING_DIR", "./logs/")
-#====(OPENAI SETTINGS)====
+# ====(OPENAI SETTINGS)====
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-DEFAULT_TEMPLATE_NAME =  os.getenv("DEFAULT_TEMPLATE_NAME", "gpt-4_default")
+DEFAULT_TEMPLATE_NAME = os.getenv("DEFAULT_TEMPLATE_NAME", "gpt-4_default")
 DEFAULT_MODEL = os.getenv("DEFAULT_MODEL_NAME", "gpt-4")
 
-#====(IS_SETUP)====
+# ====(IS_SETUP)====
 if not OPENAI_API_KEY.startswith("sk-") or OPENAI_API_KEY is None:
     IS_SETUP = False
 else:
@@ -35,20 +41,21 @@ else:
 if os.getenv("IS_SETUP", None) is not None:
     IS_SETUP = True
     # if key does not begin with sk- but is still valid, folks can set IS_SETUP to True in the .env file to avoid the warning message
-#====(CHAT SETTINGS)====
+# ====(CHAT SETTINGS)====
 DEFAULT_EXPORT_DIR = os.getenv("DEFAULT_EXPORT_DIR", "./files/chats/")
 
 DEFAULT_SAVES_DIR = os.getenv("DEFAULT_SAVE_DIR", "./files/saves/")
 
 
-
 SYSTEM_PROMPT_DIR = os.getenv("SYSTEM_PROMPT_DIR", "./files/system_prompts/")
 
 
+DEFAULT_SYSTEM_PROMPT = os.getenv(
+    "DEFAULT_SYSTEM_PROMPT",
+    "You are being run in Alex's Pretty Good Chatbot CLI, a simple interface meant to show off Alex's Pretty Good Chat Module. Your model is ||model||. The date is ||date||, and the time is ||time||. Your training data was last updated ||cut_off||.",
+)
 
-DEFAULT_SYSTEM_PROMPT = os.getenv("DEFAULT_SYSTEM_PROMPT", "You are being run in Alex's Pretty Good Chatbot CLI, a simple interface meant to show off Alex's Pretty Good Chat Module. Your model is ||model||. The date is ||date||, and the time is ||time||. Your training data was last updated ||cut_off||.")
-
-#========(FROM FILE SYSTEM)========
+# ========(FROM FILE SYSTEM)========
 from_file = """
 Congratulations on discovering the default "from_file" folder! This is a simple tool to use and can be found within the project's "files" directory, specifically under the name "from_file_system". 
 
@@ -68,20 +75,20 @@ DEFAULT_FROM_FILE_CONTENTS = from_file
 DEFAULT_FROM_FILE_FILENAME = os.getenv("DEFAULT_FROM_FILE_FILENAME", "default")
 FROM_FILE_SYSTEM_DIR = os.getenv("FROM_FILE_SYSTEM_DIR", "./files/from_file_system/")
 
-#====(MISC SETTINGS)====
+# ====(MISC SETTINGS)====
 DEFAULT_SINGLE_MSG_DIR = os.getenv("DEFAULT_SINGLE_MSG_DIR", "./files/single_messages/")
-show_wel =  os.getenv("SHOW_WELCOME_MESSAGE", True)
+show_wel = os.getenv("SHOW_WELCOME_MESSAGE", True)
 SHOW_WELCOME_MESSAGE = True
 if show_wel in ("True", "true", "1", "yes", "Yes", "YES"):
     SHOW_WELCOME_MESSAGE = True
 elif show_wel in ("False", "false", "0", "no", "No", "NO", 0):
     SHOW_WELCOME_MESSAGE = False
-#=======(AUTO-SAVE SETTINGS)=======
+# =======(AUTO-SAVE SETTINGS)=======
 # can be set to None to disable auto-save
 AUTO_SAVE_FREQUENCY = os.getenv("AUTO_SAVE_FREQUENCY", None)
 if AUTO_SAVE_FREQUENCY is not None:
     AUTO_SAVE_FREQUENCY = int(AUTO_SAVE_FREQUENCY)
-#amount of entires to rotate through
+# amount of entires to rotate through
 AUTO_SAVE_MAX_SAVES = int(os.getenv("AUTO_SAVE_MAX_SAVES", 3))
 
 AUTO_SAVE_ENTRY_NAME = os.getenv("AUTO_SAVE_ENTRY_NAME", "auto_save")
@@ -93,10 +100,13 @@ if AUTO_SAVE_FREQUENCY is not None:
         IS_AUTOSAVING = False
     else:
         IS_AUTOSAVING = False
-else: 
+else:
     IS_AUTOSAVING = False
 
-#====(SETTINGS BAG)====   
+#=============(EXPORTER CONTEXT MANAGER)================
+EXPORTER_CONTEXT_MANAGER_DIR = os.getenv("EXPORTER_CONTEXT_MANAGER_DIR", "./files/exporter_context_manager/")
+BASE_NAME = os.getenv("BASE_NAME", "ecm__")
+# ====(SETTINGS BAG)====
 class SettingsObj:
     def __init__(self):
         # LOGGING SETTINGS
@@ -125,40 +135,43 @@ class SettingsObj:
         # MISC SETTINGS
         self.DEFAULT_SINGLE_MSG_DIR = DEFAULT_SINGLE_MSG_DIR
         self.SHOW_WELCOME_MESSAGE = SHOW_WELCOME_MESSAGE
-        
+
         # AUTO-SAVE SETTINGS
         self.AUTO_SAVE_FREQUENCY = AUTO_SAVE_FREQUENCY
         self.AUTO_SAVE_MAX_SAVES = AUTO_SAVE_MAX_SAVES
         self.AUTO_SAVE_ENTRY_NAME = AUTO_SAVE_ENTRY_NAME
         self.IS_AUTOSAVING = IS_AUTOSAVING
+        
+        # EXPORTER CONTEXT MANAGER
+        self.EXPORTER_CONTEXT_MANAGER_DIR = EXPORTER_CONTEXT_MANAGER_DIR
+        self.BASE_NAME = BASE_NAME
+
 
 settings_bag = SettingsObj()
 SETTINGS_BAG = settings_bag
 
 
-
-
-
-
-
-
-#=============================================================================
-#================(TESTING)================
+# =============================================================================
+# ================(TESTING)================
 # should be run with python3 -m APGCM.settings
-#TODO: Move this to a separate file
+# TODO: Move this to a separate file
 
 
-def make_settings_string(show_api_key: bool = False ) -> str:
+def make_settings_string(show_api_key: bool = False) -> str:
     """Generates a string containing all of the settings and their values. Used for checking to make sure the settings are loaded correctly."""
     if not show_api_key:
-        api_key = "Present" if OPENAI_API_KEY is not None else "Not Present" + " len: " + str(len(OPENAI_API_KEY))
+        api_key = (
+            "Present"
+            if OPENAI_API_KEY is not None
+            else "Not Present" + " len: " + str(len(OPENAI_API_KEY))
+        )
     else:
         api_key = OPENAI_API_KEY
     settings = [
         "====(CHATLOG SETTINGS)====",
         f" Default ChatLog Handler: {DEFAULT_CHATLOG_HANDLER}",
         "=====(LOGGING SETTINGS)===",
-        f"Default Logging Level: {DEFAULT_LOGGING_LEVEL}", 
+        f"Default Logging Level: {DEFAULT_LOGGING_LEVEL}",
         f"Default Logging Directory: {DEFAULT_LOGGING_DIR}",
         "=====(OPENAI SETTINGS)=====",
         f"OpenAI Key: {api_key}",
@@ -179,29 +192,35 @@ def make_settings_string(show_api_key: bool = False ) -> str:
         f"Auto Save Frequency: {AUTO_SAVE_FREQUENCY}",
         f"Auto Save Entries: {AUTO_SAVE_MAX_SAVES}",
         f"Auto Save Entry Name: {AUTO_SAVE_ENTRY_NAME}",
-        f"Is Autosaving: {IS_AUTOSAVING}"
+        f"Is Autosaving: {IS_AUTOSAVING}",
+        "====(EXPORTER CONTEXT MANAGER)====",
+        f"Exporter Context Manager Directory: {EXPORTER_CONTEXT_MANAGER_DIR}",
+        f"Base Name: {BASE_NAME}"
     ]
 
     return "\n".join(settings)
 
+
 def main():
-    print("\n".join(
-        [
-            "This is a test to make sure the settings are loaded correctly.",
-            "If you see a bunch of settings, then everything is working correctly!",
-            "If you see a bunch of 'None' values, then something is wrong and you should ensure that the .env file is set up correctly.",
-            "You will be asked if you would like to see the OpenAI API key. If you say yes, the key will be shown. If you say no, the key will be hidden.",
-            "It recommended that you do not show the key, as it is a secret and should not be shared with anyone but if you are having issues with the API key, you can show it to make sure it is loaded correctly.",
-            "Would you like to see the OpenAI API key? (y/n)"
-            
-        ]
-    ))
+    print(
+        "\n".join(
+            [
+                "This is a test to make sure the settings are loaded correctly.",
+                "If you see a bunch of settings, then everything is working correctly!",
+                "If you see a bunch of 'None' values, then something is wrong and you should ensure that the .env file is set up correctly.",
+                "You will be asked if you would like to see the OpenAI API key. If you say yes, the key will be shown. If you say no, the key will be hidden.",
+                "It recommended that you do not show the key, as it is a secret and should not be shared with anyone but if you are having issues with the API key, you can show it to make sure it is loaded correctly.",
+                "Would you like to see the OpenAI API key? (y/n)",
+            ]
+        )
+    )
     show_api_key = input(">>> ")
     if show_api_key in ("y", "Y", "yes", "Yes", "YES", "1"):
         show_api_key = True
     else:
         show_api_key = False
     print(make_settings_string(show_api_key=show_api_key))
+
+
 if __name__ == "__main__":
     main()
-        

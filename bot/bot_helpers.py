@@ -75,3 +75,33 @@ def split_response(response: str, max_len: int = 1990) -> list:
         return [response[i : i + max_len] for i in range(0, len(response), max_len)]
     else:
         return [response, ]
+HELP_INFO = "\n".join(
+    [
+        "Welcome to the APGCM discord bot!",
+        "Formally called Alex's Maybe Kinda Decent Discord Bot",
+        "Powered by the APGCM chat module!",
+        "Here is a list of commands:",
+        "`sys_prompt` - Sets the system prompt for the chat bot.",
+        "`reminder` - Sets a reminder for the chat bot.",
+        "`print_history` - Shows chat history(might be long)",
+        "`get_saves`[include_autosaves=False] - Shows a list of all save names the bot has. Include autosaves by setting the optional parameter to True.",
+        "`load` <save_name> - Loads the save with the given name.",
+        "`save` <save_name> [overwrite=False] - Saves the chat wrapper's current state to a save with the given name. Set overwrite to True to overwrite the save if it already exists.",
+        "`debug` - Prints the chat wrapper's debug information to the channel.",
+        "`reset`[hard_reset=False] - Resets the chat wrapper's chat log. Set hard_reset to True to completely reset the chat wrapper, including the chat log, and deletes autosaves.",
+        "`export` - Exports the chat wrapper's chat history to a markdown file.",
+        "`manual_autosave` - Manually saves the chat wrapper's current state to an autosave.",
+        "`default_mode` - Sets the system prompt to the default system prompt.(Balance between casual and assistant)",
+        "`casual_mode` - Sets the system prompt to the casual system prompt.(More casual, less formal)",
+        "`assistant_mode` - Sets the system prompt to the assistant system prompt.(More formal, less casual)",
+        "`set_temp` <temperature> - Sets the temperature for the model. Can be any number with a decimal point between 0 and 2. However, values between 0 and 1 are recommended.",
+        "`delete_saves` <save_names> - Deletes the saves with the given names.",
+        "`delete_all_auto_saves` - Deletes all auto saves and backups.",
+        "`help_mode` - Toggles help mode.",
+        "`which_mode` - Shows the current mode.",
+        "`auto_saving_enabled` <enabled> - Enables or disables auto saving.",
+        "`change_frequency` <frequency> - Changes the auto save frequency.",
+        "`home_channel` <channel_id> - Changes the bot's home channel.",
+        
+    ]
+)

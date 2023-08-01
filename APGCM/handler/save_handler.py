@@ -86,6 +86,7 @@ class AbstractCWSaveHandler(ABC):
     @abstractmethod
     def delete_entry(self, entry_name: str) -> None:
         """Deletes the entry from the save system. Should raise an exception if the entry doesn't exist."""
+        pass
     def __str__(self):
         return self.name
     def __repr__(self):

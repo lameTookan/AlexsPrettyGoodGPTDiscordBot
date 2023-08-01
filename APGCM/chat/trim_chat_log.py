@@ -227,7 +227,10 @@ class TrimChatLog:
             return 0
         else:
             return self.system_prompt_object.system_prompt_tokens
-
+    @property
+    def raw_system_prompt(self) -> str:
+        """Returns the raw system prompt string, without wildcards."""
+        return self.system_prompt_object.system_prompt_raw
     @property
     def system_prompt(self) -> chat.Message:
         """Returns the system prompt as a message object. If the system prompt is not set, returns None, and if the system prompt is set, returns a message object using the SystemPrompt Object"""
@@ -673,14 +676,41 @@ class TrimChatLog:
         for msg in self.trimmed_chatlog:
             result.append(msg.pretty)
         return "\n".join(result)
-    def get_raw_history_for_export(self):
+    def get_raw_history_for_export(self) -> list[dict] | list[chat.Message]:
         """Used for exporting. If a chat log exists, returns the raw history for export. If not, returns the trimmed chat log as a list of dictionaries.
         
         """
         if self._has_chatlog():
             return self.chatlog.data
         else:
-            return self.get_messages_as_list(format=MessageReturnType.DICT)
+            return list(self.trimmed_chatlog)
+    def get_pretty_ish_chat_history(self) -> str:
+        """Returns a pretty string of chat history, except it doesn't include the ASNI color codes.
+        This is different from the regular pretty chat history, as it doesn't include the ASNI color codes. Meant to be used to show to users outside of the terminal.
+        """
+        # note: the Message class takes an optional callable for its pretty function. This would be better, however, when working with this module, I have realized that sometimes you still want the colors for console output(ie debugging, checking, etc. ) even if the application is meant to be used outside of the console.
+        result = []
+        # this will automatically get the trimmed chat log if there is no chat log, otherwise it will get the full chat log.
+        for msg in self.get_raw_history_for_export():
+            if isinstance(msg, dict):
+                # if for some reason the message is a dictionary, we need to get the role and content from the dictionary.
+                role = msg['role']
+                content = msg['content']
+            else:
+                role = msg.role
+                content = msg.content
+            # should probably make this more customizable, but for now it works, maybe add a setting for this later.(IE a callable that takes a message and returns a string)
+            if role == "user":
+                entry = f"> {content}"
+            elif role == "assistant":
+                entry = f">> {content}"
+            elif role=="system":
+                entry = f">>> {content}"
+            else: 
+                entry = f"?>>> {content}"
+                self.logger.info("Unknown role: " + role)
+            result.append(entry)
+        return "\n".join(result)
             
     def __str__(self):
         """Returns a pretty string of the entire chat log, usiing the __str__ method of the chatlog object."""

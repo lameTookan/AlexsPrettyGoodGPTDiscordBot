@@ -50,14 +50,17 @@ class Message(UserDict):
     
     """
     def __init__(self, role: str, content: str, model: str):
+        self.logger = BaseLogger(__file__, identifier="Message", filename="message.log", level=DEFAULT_LOGGING_LEVEL)
+
         self._verify_roles(role)
+        
+
         self.data = {"role": role, "content": content}
         self.role = role
         self.content = content
         self.model = model
         self.tokens = self._count_tokens(content, model)
         self.pretty = self.get_pretty_message()
-        self.logger = BaseLogger(__file__, identifier="Message", filename="message.log", level=DEFAULT_LOGGING_LEVEL)
     roles = Roles
     allowed_roles = (roles.USER.value, roles.ASSISTANT.value, roles.SYSTEM.value)
     def _verify_roles(self, role: str):

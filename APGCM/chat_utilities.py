@@ -1,5 +1,6 @@
 from templates.cw_factory import ChatFactory
 from chat_wrapper import ChatWrapper
+from file_handlers.export_context_manager import ExportContextManager
 import func as f 
 
 def quick_make_chat_wrapper():
@@ -50,6 +51,25 @@ def quick_and_dirty_chatloop(cw: ChatWrapper, spinner: bool = True) -> None:
             
             else:
                 print(cw.chat(ans))
+                
+def auto_get_exporter(cw: ChatWrapper) -> ExportContextManager:
+    """
+    Extracts the data from the chat wrapper and returns an ExportContextManager object. Faster than doing this yourself, while not making ExportContextManager rely on the chat wrapper.
+    :param cw: The chat wrapper to extract the data from.
+    returns: An ExportContextManager object.
+    """
+    data = cw.trim_object.get_raw_history_for_export()
+    system_prompt = cw.trim_object.raw_system_prompt
+    model = cw.model
+    extra_data = {
+        "Reminder Value ":  cw.reminder, 
+        
+        
+    }
+    if cw.template is not None:
+        # template formats are standardized and verified, so we will never have a template without a name key
+        extra_data["Template"] = cw.template['name']
+    return ExportContextManager(data=data, model=model, system_prompt=system_prompt, **extra_data)
 
 if __name__ == "__main__":
     cw = quick_make_chat_wrapper()

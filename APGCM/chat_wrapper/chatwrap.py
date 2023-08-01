@@ -843,7 +843,23 @@ class ChatWrapper:
         if not self._check_save_handler():
             raise exceptions.ObjectNotSetupError("Save Handler has not been set up")
         return self.save_handler.entry_names
-
+    @property
+    def all_non_rotating_entry_names(self) -> list[str]:
+        if not self._check_save_handler():
+            raise exceptions.ObjectNotSetupError("Save Handler has not been set up")
+        saves = self.save_handler.entry_names
+        result = []
+        for saves in saves:
+            if self.rotating_save_handler.is_auto_save(saves):
+                continue 
+            else:
+                result.append(saves)
+        return result
+    def delete_all_auto_saves(self) -> None:
+        if not self._check_save_handler():
+            raise exceptions.ObjectNotSetupError("Save Handler has not been set up")
+        self.rotating_save_handler.delete_all_saves_and_backups()
+            
     def make_save_dict(self):
         """Creates a save dictionary for the ChatWrapper object, that can be used to load the ChatWrapper object."""
         self._check_setup()
@@ -868,6 +884,8 @@ class ChatWrapper:
     def load_from_save_dict(self, save_dict: dict) -> None:
         """Loads the ChatWrapper object from the given save dictionary."""
         self.auto_setup()
+        self.trim_object.add_chatlog(None)
+        # trim will automatically add chat log if its in the save dict. Kinda hacky but we don't want a chat log to be added unless its in the save dict.
         save_dict = self._verify_save_dict(save_dict)
         self.trim_object.load_from_save_dict(save_dict["trim_object"])
         self.completion_wrapper.load_from_save_dict(save_dict["completion_wrapper"])
@@ -1237,6 +1255,9 @@ class ChatWrapper:
         msg_list.append("Is Trimmed Setup: " + str(self.is_trimmed_setup))
         msg_list.append("Is Completion Setup: " + str(self.is_completion_setup))
         msg_list.append("Is Loaded: " + str(self.is_loaded))
+        msg_list.append("Auto Saving: " + str(self._is_autosaving))
+        msg_list.append("Auto Save Frequency: " + str(self._auto_save_frequency))
+        msg_list.append("Auto Save Counter: " + str(self._auto_save_counter))
         msg_list.append("Trim Object Info:")
         msg_list.append("-" * 20)
         msg_list.append(self.trim_object.__repr__())
@@ -1249,3 +1270,5 @@ class ChatWrapper:
 
     def __str__(self):
         return self.trim_object.__str__()
+
+
