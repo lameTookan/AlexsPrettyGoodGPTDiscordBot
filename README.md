@@ -1,4 +1,6 @@
 # Alex's Pretty Good GPT Discord Bot
+![image](https://github.com/lameTookan/AlexsPrettyGoodGPTDiscordBot/assets/129829145/b2e54ebb-5b48-4c43-99aa-5368db3f89a0)
+
 
 Powered by Alex's Pretty Good Chat Module! (APGCM)
 
