@@ -1,4 +1,7 @@
+import os 
 
+def make_config():
+    content = """
 
 [DISCORD BOT SETTINGS]
 home_channel = 0
@@ -18,9 +21,13 @@ chunk_length = 500
 auto_save_enabled = true
 chunk_length = 500
 auto_save_interval = 10
-
-
-
-
-
-
+    """
+    filename="config.ini"
+    if os.path.isfile(filename):
+        print("Config file already exists, skipping creation")
+        return
+    with open('config.ini', 'w') as f:
+        f.write(content)
+        print("Config file created")
+    
+    
