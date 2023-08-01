@@ -58,7 +58,7 @@ You have two options for downloading the project files:
 
 - Install git from [https://git-scm.com/downloads](https://git-scm.com/downloads).
 - Open your terminal and navigate to the directory where you want to download the project files.
-- Run `git clone https://github.com/lameTookan/Alexs-Pretty-Neat-GPT-CLI` to download the project files.
+- Run `https://github.com/lameTookan/AlexsPrettyGoodGPTDiscordBot/b` to download the project files.
 - Again, make a note of the path to the project folder.
 
 Use `cd` to navigate to the project folder in your terminal.
