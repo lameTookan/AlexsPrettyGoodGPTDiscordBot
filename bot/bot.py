@@ -566,7 +566,12 @@ class DiscordBot(commands.Cog):
     )
     @app_commands.describe(channel="The new home channel.")
     @commands.has_permissions(administrator=True)
-    async def home_channel(self, interaction: discord.Interaction, *, channel: int):
+    async def home_channel(self, interaction: discord.Interaction, *, channel: str):
+        try: 
+            channel = int(channel)
+        except ValueError:
+            await interaction.response.send_message("Invalid channel ID!", delete_after=20)
+            return 
         if channel != self.home_channel:
             ch = self.bot.get_channel(channel)
             if ch is None:
