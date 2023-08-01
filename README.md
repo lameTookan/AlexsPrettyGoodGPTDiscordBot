@@ -1,4 +1,4 @@
-# Alex's Maybe Kinda Decent Discord Bot
+# Alex's Pretty Good GPT Discord Bot
 
 Powered by Alex's Pretty Good Chat Module! (APGCM)
 
