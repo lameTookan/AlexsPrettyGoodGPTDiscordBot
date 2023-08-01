@@ -132,19 +132,8 @@ If you do have access to GPT-4, uncomment the following lines:
 
 4. Save the file as `.env` in the project directory.
 
-## Step 7: Running the Quick Test
 
-Before running the bot, it's recommended to run the `quick_test.py` script to ensure everything is correctly set up.
-
-In your terminal, run:
-
-```bash
-python quick_test.py
-```
-
-This will execute a quick test and help you identify any potential issues.
-
-## Step 8: Setting up the Discord Bot
+## Step 7: Setting up the Discord Bot
 
 1. Create a Discord bot and obtain its token. Follow the instructions in `Docs/help/setup_discord_bot.md` for a detailed guide on setting up the Discord bot and obtaining the token.
 
@@ -161,6 +150,18 @@ BOT_TOKEN = [DISCORD BOT TOKEN HERE] # This is mandatory if you want to use the 
 ```bash
 DISCORD_HOME_CHANNEL = [DISCORD HOME CHANNEL ID HERE] # This is mandatory if you want to use the Discord bot (Can be changed with commands or in the config.ini file)
 ```
+## Step 8: Running the Quick Test
+
+Before running the bot, it's recommended to run the `quick_test.py` script to ensure everything is correctly set up.
+
+In your terminal, run:
+
+```bash
+python quick_test.py
+```
+
+This will execute a quick test and help you identify any potential issues.
+
 
 ## Step 9: Running the Discord Bot
 
