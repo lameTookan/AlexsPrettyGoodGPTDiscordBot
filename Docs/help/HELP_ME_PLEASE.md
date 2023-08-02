@@ -134,6 +134,7 @@ If you do have access to GPT-4, uncomment the following lines:
 
 
 ## Step 7: Setting up the Discord Bot
+See [Setting Up Discord Bot ](./setting_up_discord_bot.md) for a more detailed guide
 
 1. Create a Discord bot and obtain its token. Follow the instructions in `Docs/help/setup_discord_bot.md` for a detailed guide on setting up the Discord bot and obtaining the token.
 

@@ -1,4 +1,6 @@
 # Alex's Pretty Good GPT Discord Bot
+![image](https://github.com/lameTookan/AlexsPrettyGoodGPTDiscordBot/assets/129829145/b2e54ebb-5b48-4c43-99aa-5368db3f89a0)
+
 
 Powered by Alex's Pretty Good Chat Module! (APGCM)
 
@@ -59,7 +61,7 @@ APGCM is a highly customizable and extendable module developed for creating chat
 ```python
 import APGCM
 factory = APGCM.ChatFactory()
-chat = factory.create_chat()
+chat = factory.get_chat()
 stream_handler = APGCM.StdoutStreamHandler()
 chat.add_stream_handler(stream_handler)
 
