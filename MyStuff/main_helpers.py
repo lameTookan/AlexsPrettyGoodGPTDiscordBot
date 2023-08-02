@@ -47,6 +47,7 @@ def title_card():
 def main_helper():
     title_card()
     print("Be sure to use the quick_test.py file to test your settings before running the bot.")
+    
 
     print("Starting Discord Bot...")
     print("\n\n")

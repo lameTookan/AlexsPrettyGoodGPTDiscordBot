@@ -12,6 +12,7 @@ The bot includes:
 
 - **Multiple Modes**: Choose from casual, assistant, and default modes to set the bot's conversational style. Plus, a helpful 'help' mode to answer your questions about the bot.
 - **Customizability**: Adjust the 'temperature' of the conversation, set the 'home channel' the bot responds to, and even tweak the system prompt and 'System Reminder' value. All this can be done in real-time via Discord app commands.
+- **Accumulator Command**: If the 2K character limit on Discord with a GPT bot bothers you, use the accumulator command. Switch it on to group your messages. They're sent to the AI when you use the command again.
 - **Save & Load**: Save the ongoing conversation and load it whenever you want. The bot auto-saves every 10 messages and loads the previous conversation on startup.
 - **Export Feature**: Export the conversation as a markdown file and download it directly from the Discord app.
 - **History Management**: Reset and/or print history whenever you need with a Discord app command.

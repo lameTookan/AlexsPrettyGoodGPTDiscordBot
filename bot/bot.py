@@ -1,10 +1,12 @@
 import sys
-import MyStuff.mystuff as ms 
+import MyStuff.mystuff as ms
 
 sys.path.append("./APGCM")
 import asyncio
 from typing import Literal, Optional, Union, Any, Tuple
 import discord
+import openai
+import time
 from config import ChangeConfig
 from discord import app_commands
 from APGCM import DEFAULT_LOGGING_LEVEL, BaseLogger, exceptions, chat_utilities
@@ -15,6 +17,7 @@ from bot.bot_helpers import (
     process_save_command,
     split_response,
     HELP_INFO,
+    ACCUMULATOR_MSG_ENABLED,
 )
 from discord.ext import commands
 from discord_settings import DISCORD_SETTINGS_BAG
@@ -149,8 +152,9 @@ class DiscordBot(commands.Cog):
         self._sync_autosaving()
         self._sync_home_channel()
         self.current_mode = "default"
+        self.accumulator_mode = False
+        self._accumulated_message = ""
 
-    
     autosaving = app_commands.Group(
         name="autosaving", description="Autosaving commands"
     )
@@ -182,6 +186,9 @@ class DiscordBot(commands.Cog):
 
     def process_mode_change(self, mode: int) -> None:
         """Processes a mode change."""
+        if self.help_mode:
+            self.toggle_help()
+            print("Help mode disabled!")
         if mode == Modes.DEFAULT_MODE.value:
             self.cw.system_prompt = DISCORD_SETTINGS_BAG.DEFAULT_DISCORD_SYSTEM_PROMPT
             self.cw.reminder = DISCORD_SETTINGS_BAG.DEFAULT_REMINDER
@@ -268,14 +275,70 @@ class DiscordBot(commands.Cog):
                     if len(accumulated_message) > 0:
                         await message.reply(accumulated_message)
                     accumulated_message = ""
-
                     break
+                except openai.OpenAIError as e:
+                    print(
+                        "An error was encountered while processing the message: "
+                        + str(e)
+                    )
+                    await message.reply(
+                        "An error was encountered while processing the message: "
+                        + str(e)
+                    )
+                    await message.reply(
+                        "Unless the error indicates that your openai key is invalid, you should just be able to resend your message in a few seconds. "
+                    )
+
+    async def _get_accumulator_response(self):
+        """Gets the response for the accumulator mode."""
+        channel = self.bot.get_channel(self.home_channel)
+        self.accu_tries = 0
+        if self._accumulated_message == "":
+            await channel.send("No messages to send!", delete_after=20)
+        async with channel.typing():
+            # so as not to repeat ourselves, we will just get a full response from the AI and then split it up rather than using the stream_chat method.
+            try:
+                response = self.cw.chat(self._accumulated_message)
+                response = (
+                    split_response(response) if len(response) > 1990 else [response]
+                )
+                for msg in response:
+                    await channel.send(msg)
+                self._accumulated_message = ""
+                self.accu_tries = 0
+            except openai.OpenAIError as e:
+                await channel.send(
+                    "An error was encountered while processing the message: " + str(e),
+                    delete_after=20,
+                )
+
+                self.accu_tries += 1
+                if self.accu_tries >= 2:
+                    time.sleep(3)
+                    await channel.send("Trying one more time...", delete_after=20)
+                    self._get_accumulator_response()
+                else:
+                    await channel.send(
+                        "An error was encountered while processing the message: "
+                        + str(e),
+                        delete_after=20,
+                    )
+                    self._accumulated_message = ""
+                    self.accu_tries = 0
+                    return
+
+    def accumulate_message(self, message: str) -> None:
+        """Accumulates a message."""
+        self._accumulated_message += message + "\n"
+        self.logger.info("Accumulated message: " + self._accumulated_message)
+        print("Got message: " + message)
+        print("Accumulated message: " + self._accumulated_message)
 
     # ______________________(END HELPERS)______________________#
 
     # ==========================(EVENT LISTENERS)========================#
     @commands.Cog.listener()
-    async def on_ready(self)-> None:
+    async def on_ready(self) -> None:
         """Sends a message to the home channel when the bot is ready."""
         await self.bot.tree.sync()
         channel = self.bot.get_channel(self.home_channel)
@@ -291,25 +354,33 @@ class DiscordBot(commands.Cog):
         await self.bot.change_presence(activity=discord.Game(name="GPT-4"))
 
     @commands.Cog.listener()
-    async def on_message(self, message: discord.Message)-> None:
+    async def on_message(self, message: discord.Message) -> None:
         channel = message.channel
-        result, msg = ms.nmxy(message.content)
         if message.author == self.bot.user:
             return
+        # accumulator mode
+        if self.accumulator_mode:
+            if (
+                message.content == ACCUMULATOR_MSG_ENABLED
+                or message.author == self.bot.user
+            ):
+                return
+            self.accumulate_message(message.content)
+            return
+        result, msg = ms.nmxy(message.content)
+
         if message.channel.id != self.home_channel:
             print("Got message but was not in home channel, discarding...")
             return
         if message.content.startswith(DISCORD_SETTINGS_BAG.BOT_PREFIX):
             return
-        
+
         if result:
             msgs = split_response(msg)
-            await channel.send( delete_after=20)
+            await channel.send(delete_after=20)
             for msg in msgs:
-               await  channel.send(msg, delete_after=30)
-            
-            
-            
+                await channel.send(msg, delete_after=30)
+
         else:
             print("AI message received and being processed...")
             await self.process_ai_message(message)
@@ -328,13 +399,13 @@ class DiscordBot(commands.Cog):
         name="default_mode",
         description="Sets the system prompt to the default system prompt.",
     )
-    async def default_mode(self, interaction: discord.Interaction)-> None:
+    async def default_mode(self, interaction: discord.Interaction) -> None:
         self.process_mode_change(Modes.DEFAULT_MODE.value)
         self.logger.info("Default mode command called!")
         await interaction.response.send_message("Mode set to default!", delete_after=20)
 
     @modes.command(name="help_mode", description="Toggles help mode.")
-    async def help_mode(self, interaction: discord.Interaction)-> None:
+    async def help_mode(self, interaction: discord.Interaction) -> None:
         result, message = self.toggle_help()
         self.logger.info("Help mode command called!")
         if result:
@@ -351,7 +422,7 @@ class DiscordBot(commands.Cog):
         name="casual_mode",
         description="Sets the system prompt to the casual system prompt.",
     )
-    async def casual_mode(self, interaction: discord.Interaction)-> None:
+    async def casual_mode(self, interaction: discord.Interaction) -> None:
         self.process_mode_change(Modes.CASUAL_MODE.value)
         self.logger.info("Casual mode command called!")
         print("Mode set to casual!")
@@ -369,7 +440,7 @@ class DiscordBot(commands.Cog):
         )
 
     @modes.command(name="which_mode", description="Shows the current mode.")
-    async def which_mode(self, interaction: discord.Interaction)-> None:
+    async def which_mode(self, interaction: discord.Interaction) -> None:
         await interaction.response.send_message(
             f"Current mode: {self.current_mode.title()}", delete_after=20
         )
@@ -393,7 +464,7 @@ class DiscordBot(commands.Cog):
     @app_commands.describe(frequency="The new auto save frequency.")
     async def change_frequency(
         self, interaction: discord.Interaction, *, frequency: int
-    )-> None:
+    ) -> None:
         self.config.auto_save_frequency = frequency
         self._sync_autosaving()
         self.logger.info(
@@ -429,6 +500,20 @@ class DiscordBot(commands.Cog):
         )
 
     # ==============================(GENERAL COMMANDS)==============================#
+    @app_commands.command(
+        name="accumulator",
+        description="Accumulates messages until called again, then sends them all at once.",
+    )
+    async def toggle_accumulator_mode(self, interaction: discord.Interaction):
+        """Accumulator mode will accumulate messages until it is disabled, and then send them all at once."""
+
+        self.accumulator_mode = not self.accumulator_mode
+        if self.accumulator_mode:
+            await interaction.response.send_message(ACCUMULATOR_MSG_ENABLED)
+        else:
+            await interaction.response.send_message("Accumulator mode disabled! 🎉 ")
+            await self._get_accumulator_response()
+
     @app_commands.command(name="set_temp")
     @app_commands.describe(
         value="Sets the  for the model. Can be any number with a decimal point between 0 and 2. However, values between 0 and 1 are recommended.",
@@ -550,6 +635,10 @@ class DiscordBot(commands.Cog):
     async def debug(self, interaction: discord.Interaction):
         """Command to print the chat wrapper's debug information to the channel."""
         data = self.cw.debug()
+        data += "Mode: " + self.current_mode + "\n"
+        data += "Home Channel ID: " + str(self.home_channel) + "\n"
+        data += "Message chunk length: " + str(self.config.chunk_length) + "\n"
+
         await interaction.response.send_message(
             "Outputting debug info...", delete_after=20
         )
@@ -557,9 +646,9 @@ class DiscordBot(commands.Cog):
             msgs = split_response(data)
 
             for msg in msgs:
-                await interaction.channel.send(msg, delete_after=20)
+                await interaction.channel.send(msg, delete_after=60)
         else:
-            await interaction.channel.send(data, delete_after=20)
+            await interaction.channel.send(data, delete_after=60)
 
     @app_commands.command(
         name="home_channel", description="Changes the bot's home channel."
@@ -567,11 +656,13 @@ class DiscordBot(commands.Cog):
     @app_commands.describe(channel="The new home channel.")
     @commands.has_permissions(administrator=True)
     async def home_channel(self, interaction: discord.Interaction, *, channel: str):
-        try: 
+        try:
             channel = int(channel)
         except ValueError:
-            await interaction.response.send_message("Invalid channel ID!", delete_after=20)
-            return 
+            await interaction.response.send_message(
+                "Invalid channel ID!", delete_after=20
+            )
+            return
         if channel != self.home_channel:
             ch = self.bot.get_channel(channel)
             if ch is None:

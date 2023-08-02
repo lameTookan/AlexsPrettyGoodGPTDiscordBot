@@ -78,7 +78,7 @@ def split_response(response: str, max_len: int = 1990) -> list:
 HELP_INFO = "\n".join(
     [
         "Welcome to the APGCM discord bot!",
-        "Formally called Alex's Maybe Kinda Decent Discord Bot",
+        "Formally called Alex's Pretty Good Discord Bot",
         "Powered by the APGCM chat module!",
         "Here is a list of commands:",
         "`sys_prompt` - Sets the system prompt for the chat bot.",
@@ -102,6 +102,17 @@ HELP_INFO = "\n".join(
         "`auto_saving_enabled` <enabled> - Enables or disables auto saving.",
         "`change_frequency` <frequency> - Changes the auto save frequency.",
         "`home_channel` <channel_id> - Changes the bot's home channel.",
-        
+        "`accumulator` - Toggles accumulator mode, which allows you to send messages longer than 2000 characters. Turn it on, and send your messages. Then, turn it off to send the messages.",
     ]
 )
+ACCUMULATOR_MSG_ENABLED = """    
+Accumulator Mode Activated! 🎉
+
+Here's what this means:
+
+Accumulation of Messages: The bot is now in a special mode where it accumulates or "gathers" all the messages you and others send, instead of responding to each one individually right away.
+
+Discord's Message Limit: This mode allows us to get around Discord's maximum message character limit. You can write as much as you want, and the bot will process it all together when accumulator mode is turned off.
+
+Turning Off Accumulator Mode: Accumulator mode will remain active until it's manually turned off. Once it's turned off, the bot will respond to all the accumulated messages at once. Simply use the /accumulator command again to turn it off.
+"""
