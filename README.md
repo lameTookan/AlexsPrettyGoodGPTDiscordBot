@@ -1,8 +1,18 @@
 # Alex's Pretty Good GPT Discord Bot
+
 ![image](https://github.com/lameTookan/AlexsPrettyGoodGPTDiscordBot/assets/129829145/b2e54ebb-5b48-4c43-99aa-5368db3f89a0)
 
-
 Powered by Alex's Pretty Good Chat Module! (APGCM)
+
+## Important Note about this project
+
+For right now, I am bringing this project to a close. I had a lot of fun making it, and learned a lot, but for right now, I am going to go back to focusing on learning more, at least for the rest of this month(August 4, 2023 as of writing this.).
+
+I have only been coding for a few months, and I have a looot to learn. I will likely come back to this project next month however.
+
+However, if anyone has any interest in this project, be sure to let me know on github, or my discord account (@LameTookan), and I start working on it again. I still have quite a few ideas for this project, and I'll start updating it again when I have time.
+
+Check out the [About This Project](Docs/about_this_project.md) for more info, as well as future plans and general thoughts and reflections on this project.
 
 ## Introduction
 
@@ -21,6 +31,7 @@ The bot includes:
 - **Powerful Template System**: Powered by APGCM, adjust every aspect of the bot's behavior using the template system. Take full advantage of the model's max tokens with up to 200 max messages in the chat history.
 
 ## Setup
+
 For a detailed guide on setting the bot up, made especially for beginners check out the [HELP_ME_PLEASE.md](/Docs/help/HELP_ME_PLEASE.md)
 
 1. Clone the repo
@@ -39,7 +50,7 @@ For a detailed guide on setting the bot up, made especially for beginners check 
 
     Follow the instructions under STEP 1, STEP 2, and STEP 3 comments in the .env.example file.
 
-5. Add your home channel id to the config.ini.example and rename it to config.ini 
+5. Add your home channel id to the config.ini.example and rename it to config.ini
 6. I recommend running the `quick_test.py` script to ensure everything is correctly setup before running the bot.
 
     ```bash

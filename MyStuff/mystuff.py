@@ -160,6 +160,7 @@ def auto_center(text: str ) -> str:
 terminal_cols = shutil.get_terminal_size().columns
 def make_full_divider(char: str ) -> str:
     return char * terminal_cols
+
 def make_full_divider_special(name: str = "line" ) -> str:
     chars = {
         "line": "─",
