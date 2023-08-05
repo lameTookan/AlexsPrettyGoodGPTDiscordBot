@@ -1,6 +1,11 @@
 # About this Project / FAQ
 
+
+
 Of course, no one has asked me any questions about this project, but I am going to answer some questions I think people might have anyway.
+
+Also if anyone has even a slight interest in this project hit me up! I am assuming no one is really paying attention, but if someone is, I will focus more on this project and updating it!
+You can hit me up on here, email me at lametoucan@gmail.com, or even message me on discord @lametookan!
 
 ## Ideas for updates
 
