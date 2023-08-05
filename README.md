@@ -10,7 +10,7 @@ For right now, I am bringing this project to a close. I had a lot of fun making 
 
 I have only been coding for a few months, and I have a looot to learn. I will likely come back to this project next month however.
 
-However, if anyone has any interest in this project, be sure to let me know on github, or my discord account (@LameTookan), and I start working on it again. I still have quite a few ideas for this project, and I'll start updating it again when I have time.
+However, if anyone has any interest in this project, be sure to let me through either on github, my discord(@lameTookan) or even on my email lametoucan@gmail.com and I start working on it again. I still have quite a few ideas for this project, and I'll start updating it again when I have time.
 
 Check out the [About This Project](Docs/about_this_project.md) for more info, as well as future plans and general thoughts and reflections on this project.
 
