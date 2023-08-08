@@ -4,6 +4,7 @@ import uuid
 from collections import namedtuple
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from settings import SETTINGS_BAG
 from log_config import BaseLogger, DEFAULT_LOGGING_LEVEL
 import exceptions
 import func
@@ -126,8 +127,17 @@ class ModelParameters:
             msg_list.append(f"{indents}{param}: {str(self.get_all_params_dict()[param])}")
         return "\n".join(msg_list)
             
-    
-             
+    def _add_payload(self, kwargs: dict)-> dict:
+        
+        """Adds required headers  for openrouter API to kwargs, if enabled"""
+        if SETTINGS_BAG.IS_OPEN_ROUTER_ENABLED:
+            payload = SETTINGS_BAG.OPEN_ROUTER_PAYLOAD
+            kwargs.update({"headers": payload})
+            return kwargs
+        else:
+            return kwargs
+
+                
     def _process_special_values(
         self, value: str | float | int
     ) -> tuple[bool, int | float]:
@@ -279,7 +289,9 @@ class ModelParameters:
         if self.stream is True:
             kwargs["stream"] = self.stream
         self.logger.debug(f"Got param kwargs: {kwargs}")
-        return kwargs
+        # the openrouter api requires a payload, so we add it here. This method won't do anything if openrouter is not being used
+        # openrouter is just a service that wraps the openai api, and adds some extra features
+        return self._add_payload(kwargs)
 
     def get_all_params_dict(self):
         """Gets all the parameters of the model as a dictionary, includes ones that are not currently set(ie. None)"""

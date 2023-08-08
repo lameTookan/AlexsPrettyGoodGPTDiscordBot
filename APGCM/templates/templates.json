@@ -258,5 +258,85 @@
             "max_tokens": 1000,
             "temperature": 0.1
         }
+    },
+    
+        "gpt-4-32k_default": {
+            "model": "gpt-4-32k",
+            "trim_object": {
+                "model": "gpt-4-32k",
+                "max_tokens": 32000,
+                "token_padding": 1000,
+                "max_completion_tokens": 2000,
+                "max_messages": 500
+            },
+            "chat_completion_wrapper": {
+                "model": "gpt-4-32k",
+                "max_tokens": 2000,
+                "temperature": 0.7
+            },
+            "info": {
+                "description": "The default configuration for the gpt-4-32k model",
+                "tags": [
+                    "gpt-4-32k",
+                    "default",
+                    "chat"
+                ]
+            },
+            "name": "gpt-4-32k_default",
+            "id": 11
+        },
+        "gpt-4-32k_creative": {
+            "model": "gpt-4-32k",
+            "info": {
+                "description": "Creative Mode for the gpt-4-32k model",
+                "tags": [
+                    "gpt-4-32k",
+                    "creative",
+                    "chat",
+                    "high temperature"
+                ]
+            },
+            "name": "gpt-4-32k_creative",
+            "id": 12,
+            "trim_object": {
+                "model": "gpt-4-32k",
+                "max_tokens": 32000,
+                "token_padding": 1000,
+                "max_completion_tokens": 2000,
+                "max_messages": 500
+            },
+            "chat_completion_wrapper": {
+                "model": "gpt-4-32k",
+                "max_tokens": 2000,
+                "temperature": 1.0
+            }
+        },
+        "gpt-4-32k_precise": {
+            "model": "gpt-4-32k",
+            "name": "gpt-4-32k_precise",
+            "id": 13,
+            "info": {
+                "description": "A precise configuration for the gpt-4-32k model, meant to be used for precise responses. Low temp",
+                "tags": [
+                    "gpt-4-32k",
+                    "precise",
+                    "chat",
+                    "low temp",
+                    "conservative"
+                ]
+            },
+            "trim_object": {
+                "model": "gpt-4-32k",
+                "max_tokens": 32000,
+                "token_padding": 1000,
+                "max_completion_tokens": 2000,
+                "max_messages": 500
+            },
+            "chat_completion_wrapper": {
+                "model": "gpt-4-32k",
+                "max_tokens": 2000,
+                "temperature": 0.1
+            }
+        }
     }
-}
+    

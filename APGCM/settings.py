@@ -21,8 +21,19 @@ class ChatLogHandlers(Enum):
 DEFAULT_CHATLOG_HANDLER = os.getenv(
     "DEFAULT_CHATLOG_HANDLER", ChatLogHandlers.CHATLOG_USERLIST.value
 )
-
-
+#=====(OPENROUTER SETTINGS)====
+IS_OPEN_ROUTER_ENABLED = func.str_to_bool(os.getenv("OPEN_ROUTER", "False"))
+OPEN_ROUTER_URL = os.getenv("OPEN_ROUTER_URL", "https://openrouter.ai/api/v1")
+"""
+"HTTP-Referer":URL , 
+        "X-Title": X_TITLE, 
+}
+"""
+# MODIFY THIS IF YOU ARE USING THIS FOR YOUR OWN PROJECT
+OPEN_ROUTER_PAYLOAD = {
+    "HTTP-Referer": "https://github.com/lameTookan/AlexsPrettyGoodGPTDiscordBot",
+    "X-Title": "AlexsPrettyGoodGPTDiscordBot",
+}
 # ====(LOGGING SETTINGS)====
 level = func.convert_level_to_value(os.getenv("DEFAULT_LOGGING_LEVEL", logging.WARNING))
 DEFAULT_LOGGING_LEVEL = level
@@ -145,6 +156,10 @@ class SettingsObj:
         # EXPORTER CONTEXT MANAGER
         self.EXPORTER_CONTEXT_MANAGER_DIR = EXPORTER_CONTEXT_MANAGER_DIR
         self.BASE_NAME = BASE_NAME
+        #OPEN_ROUTER SETTINGS
+        self.IS_OPEN_ROUTER_ENABLED = IS_OPEN_ROUTER_ENABLED
+        self.OPEN_ROUTER_URL = OPEN_ROUTER_URL
+        self.OPEN_ROUTER_PAYLOAD = OPEN_ROUTER_PAYLOAD
 
 
 settings_bag = SettingsObj()
@@ -196,6 +211,11 @@ def make_settings_string(show_api_key: bool = False) -> str:
         "====(EXPORTER CONTEXT MANAGER)====",
         f"Exporter Context Manager Directory: {EXPORTER_CONTEXT_MANAGER_DIR}",
         f"Base Name: {BASE_NAME}"
+        f"====(OPENROUTER SETTINGS)====",
+        f"Is Open Router Enabled: {IS_OPEN_ROUTER_ENABLED}",
+        f"Open Router URL: {OPEN_ROUTER_URL}"
+        f"Open Router Payload: {OPEN_ROUTER_PAYLOAD}"
+        
     ]
 
     return "\n".join(settings)

@@ -1,5 +1,6 @@
 import chat_completion_wrapper.parameters
-from handler.stream_handler import AbstractStreamOutputHandler, StdoutStreamHandler
+from handler.stream_handler import AbstractStreamOutputHandler
+from settings import SETTINGS_BAG
 from log_config import BaseLogger, DEFAULT_LOGGING_LEVEL
 import uuid 
 import exceptions
@@ -62,6 +63,9 @@ class ChatCompletionWrapper:
     @property
     def model(self)-> str:
         """Sets the model to use for the chat completion, takes a string."""
+        if SETTINGS_BAG.IS_OPEN_ROUTER_ENABLED:
+            # open router requires the model to be prefixed with openai/
+            return f"openai/{self._model}"
         return self._model
     @model.setter
     def model(self, model: str):
@@ -89,9 +93,13 @@ class ChatCompletionWrapper:
         See ModelParameters class for more information.
         """
         self.parameters.set_params(**kwargs)
+    
     def stream_chat(self, messages: list[dict] ) -> openai.ChatCompletion:
         """Returns a ChatCompletion object directly from the OpenAI API, without any modifications."""
         openai.api_key = self.API_KEY
+        if SETTINGS_BAG.IS_OPEN_ROUTER_ENABLED:
+            openai.api_base = SETTINGS_BAG.OPEN_ROUTER_URL
+           
         tries = 3
         while True:
             try:
@@ -108,6 +116,8 @@ class ChatCompletionWrapper:
     def chat(self, messages: list[dict]) -> str:
         """Main method for the ChatCompletionWrapper class, takes a list of messages and returns a response as a string. """
         openai.api_key = self.API_KEY
+        if SETTINGS_BAG.IS_OPEN_ROUTER_ENABLED:
+            openai.api_base = SETTINGS_BAG.OPEN_ROUTER_URL
         tries = 3 
         while True:
             try:

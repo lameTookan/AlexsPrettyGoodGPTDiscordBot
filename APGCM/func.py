@@ -300,8 +300,25 @@ class LoadingSpinner:
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         """Called when used as a context manager. Stops the spinner. Does nothing with the exception info."""
         self.stop()
-def quick_make_chat_wrapper(self):
-    """This will make a chat wrapper with the defaults you have set in your .env file. Useful for testing and if you don't want to use any of the customization options in the ChatFactory class."""
-    from templates.cw_factory import ChatFactory
-    fact = ChatFactory()
-    return fact.get_chat()
+
+def str_to_bool(st: str) -> bool:
+    """Converts a string to a boolean. Returns None if the string is not a valid boolean."""
+    st = str(st)
+    st = st.lower().strip()
+    true_values = ('y', 'yes', 't', 1, 'true', "on", "enable", "1", "enabled", "active", "activated", "positive")
+    no_values = ('n', 'no', 'f', 0, 'false', "off", "disable", "0", "disabled", "inactive", "deactivated", "negative")
+    if st in true_values:
+        return True
+    elif st in no_values:
+        return False
+    else:
+        return None
+def pretty_print_dict(d, indent=0):
+    for key, value in d.items():
+        print('\t' * indent + str(key), end=': ')
+        if isinstance(value, dict):
+            print()
+            pretty_print_dict(value, indent + 1)
+        else:
+            print(value)
+
